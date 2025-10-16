@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>API Documentation</title>
+  <link rel="stylesheet" type="text/css" href="./swagger-ui/swagger-ui.css" />
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="./swagger-ui/swagger-ui-bundle.js"></script>
+  <script src="./swagger-ui/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = function() {
+      SwaggerUIBundle({
+        urls: [
+          { url: "./swagger-specs/tiket-b2b.yaml", name: "Tiket B2B Flight Integration" },
+        ],
+        dom_id: '#swagger-ui',
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        layout: "StandaloneLayout"
+      });
+    };
+  </script>
+</body>
+</html>
