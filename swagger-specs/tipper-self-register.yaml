@@ -173,10 +173,10 @@ paths:
         - name: type
           in: path
           required: true
-          description: "e.g., IDENTITY_CARD, BUSINESS_LICENSE"
+          description: "e.g., KTP, NPWP, PROFILE, COMPANY_CARD"
           schema:
             type: string
-          example: "IDENTITY_CARD"
+          example: "KTP"
       requestBody:
         content:
           multipart/form-data:
@@ -190,8 +190,22 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/SuccessResponse'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralSuccessEnvelope'
+                example:
+                  success: false
+                  error:
+                    type: "SatpamValidationError"
+                    message: {
+                      file: {
+                        file: "file must be an image."
+                      }
+                    }
 
   /tipper/v1/applications/{id}/submit:
     post:
@@ -223,7 +237,31 @@ paths:
           example: "APP-123"
       responses:
         '200':
-          $ref: '#/components/responses/SuccessResponse'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralSuccessEnvelope'
+              example:
+                summary: Application logs
+                value:
+                  - id: "id"
+                    tipperStaffApplicationId: "tipperStaffApplicationId"
+                    updaterId: "updaterId"
+                    updaterRole: "[USER|ADMIN]"
+                    action: "[CREATE_APPLICATION|SUBMIT_APPLICATION|UPDATE]"
+                    reason: "remarks"
+                    delta: "<delta in json>"
+                    createdAt: ""
+                    updatedAt: ""
+                  - id: "id"
+                    tipperStaffApplicationId: "tipperStaffApplicationId"
+                    updaterId: "updaterId"
+                    updaterRole: "[USER|ADMIN]"
+                    action: "[CREATE_APPLICATION|SUBMIT_APPLICATION|UPDATE]"
+                    reason: "remarks"
+                    delta: "<delta in json>"
+                    createdAt: ""
+                    updatedAt: ""
 
 components:
   responses:
@@ -281,9 +319,8 @@ components:
     Merchant:
       type: object
       properties:
-        merchantId: { type: string, example: "M-99" }
-        businessName: { type: string, example: "Central Java Coffee" }
-        status: { type: string, example: "ACTIVE" }
+        id: { type: string, example: "ece3a9b7-8fab-43c8-9567-253687054462" }
+        name: { type: string, example: "Jaya Elektronik" }
 
     # --- SUCCESS ENVELOPES ---
     GeneralSuccessEnvelope:
