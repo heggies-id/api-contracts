@@ -153,6 +153,13 @@ paths:
                   data:
                     id: "962a29b9-80aa-4365-aa23-6cfa4acbe227"
                     status: "PENDING_REVIEW_BUSINESS_OPS"
+                    documents:
+                      - id: "id"
+                        tipperStaffApplicationId: "tipperStaffApplicationId"
+                        documentType: "[KTP|NPWP|PROFILE|COMPANY_CARD]"
+                        documentPath: "/path/to/file"
+                        createdAt: ""
+                        updatedAt: ""
                     createdAt: "2023-10-27T10:00:00Z"
                     updatedAt: "2023-10-27T14:30:00Z"
         '401':
