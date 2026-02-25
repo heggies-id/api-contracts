@@ -1,0 +1,303 @@
+openapi: 3.0.0
+info:
+  title: Tipper Self Register API
+  description: API documentation with standardized success and error envelopes.
+  version: 1.0.0
+
+tags:
+  - name: public
+    description: "Open endpoints for authentication and onboarding"
+  - name: tipper
+    description: "\"/tipper\"-related APIs"
+  - name: ops
+    description: "\"/ops\"-related APIs"
+
+paths:
+  /public/v2/tipper/login:
+    post:
+      summary: User Login
+      tags:
+        - public
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /public/v1/tipper/register/send-otp:
+    post:
+      summary: Send Registration OTP
+      tags:
+        - public
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phoneNumber:
+                  type: string
+                  example: "+628123456789"
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /public/v1/tipper/register:
+    post:
+      summary: Complete Registration
+      tags:
+        - public
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/Created'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /tipper/v1/merchants:
+    get:
+      summary: Search eligible merchants in tipper flow
+      tags:
+        - tipper
+      parameters:
+        - name: searchKeyword
+          in: query
+          required: false
+          schema:
+            type: string
+          example: "foo"
+      responses:
+        '200':
+          $ref: '#/components/responses/MerchantListResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /tipper/v1/applications/{id}/documents/{type}:
+    post:
+      summary: Upload Application Document
+      tags:
+        - tipper
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "APP-123"
+        - name: type
+          in: path
+          required: true
+          description: "e.g., IDENTITY_CARD, BUSINESS_LICENSE"
+          schema:
+            type: string
+          example: "IDENTITY_CARD"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The document file to upload
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /tipper/v1/applications/{id}/submit:
+    post:
+      summary: Submit Application
+      tags:
+        - tipper
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "APP-123"
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+  /ops/v1/tipper/staffs/{id}/application-logs:
+    post:
+      summary: Application logs by tipper staff id
+      tags:
+        - ops
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "APP-123"
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+
+components:
+  responses:
+    SuccessResponse:
+      description: General success response with data envelope.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GeneralSuccessEnvelope'
+    
+    MerchantListResponse:
+      description: A list of merchants wrapped in a standard success envelope.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MerchantEnvelope'
+
+    Created:
+      description: The resource was created successfully.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreatedEnvelope'
+
+    BadRequest:
+      description: The request was invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+
+    Unauthorized:
+      description: Authentication failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+
+    ServerError:
+      description: Internal server error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+
+  schemas:
+    # --- BUSINESS ENTITIES ---
+    Merchant:
+      type: object
+      properties:
+        merchantId: { type: string, example: "M-99" }
+        businessName: { type: string, example: "Central Java Coffee" }
+        status: { type: string, example: "ACTIVE" }
+
+    # --- SUCCESS ENVELOPES ---
+    GeneralSuccessEnvelope:
+      type: object
+      properties:
+        success: { type: boolean, example: true }
+        data:
+          type: object
+          properties:
+            message: { type: string, example: "Operation completed successfully" }
+
+    MerchantEnvelope:
+      type: object
+      properties:
+        success: { type: boolean, example: true }
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Merchant'
+
+    CreatedEnvelope:
+      type: object
+      properties:
+        success: { type: boolean, example: true }
+        data:
+          type: object
+          properties:
+            id: { type: string, example: "12345" }
+            message: { type: string, example: "Resource created successfully" }
+
+    # --- ERROR ENVELOPES ---
+    ErrorEnvelope:
+      type: object
+      properties:
+        success: { type: boolean, example: false }
+        error:
+          $ref: '#/components/schemas/ErrorModel'
+
+    # --- DATA MODELS ---
+    ErrorModel:
+      type: object
+      properties:
+        type: { type: string, example: "BadRequest|<error messaging>" }
+        message: { type: string, example: "<error message in bahasa indonesia>" }
+
+    LoginRequest:
+      type: object
+      properties:
+        email: { type: string, example: "johndoe@example.com" }
+        password: { type: string, format: password, example: "P@ssword123" }
+
+    LoginResponse:
+      type: object
+      properties:
+        success: { type: boolean, example: true }
+        data:
+          type: object
+          properties:
+            token: { type: string, example: "eyJ0eXA..." }
+            showTncAgreement: { type: boolean, example: false }
+            application:
+              type: object
+              properties:
+                status:
+                  type: string
+                  description: "Application status"
+                  enum:
+                    - INCOMPLETE
+                    - PENDING_REVIEW_ANTI_FRAUD
+                    - PENDING_REVIEW_BUSINESS_OPS
+                    - APPROVED
+                    - REJECTED
+                    - BLOCKED
+                  example: "INCOMPLETE"
+
+    RegistrationRequest:
+      type: object
+      properties:
+        firstName: { type: string, example: "John" }
+        lastName: { type: string, example: "Doe" }
+        email: { type: string, example: "johndoe@example.com" }
+        password: { type: string, format: password, example: "P@ssword123" }
+        otp: { type: string, example: "123456" }
