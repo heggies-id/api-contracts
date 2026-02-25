@@ -13,29 +13,6 @@ tags:
     description: "\"/ops\"-related APIs"
 
 paths:
-  /public/v2/tipper/login:
-    post:
-      summary: User Login
-      tags:
-        - public
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginRequest'
-      responses:
-        '200':
-          description: Login success.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LoginResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-
   /public/v1/tipper/register/send-otp:
     post:
       summary: Send Registration OTP
@@ -157,6 +134,32 @@ paths:
           $ref: '#/components/responses/MerchantListResponse'
         '500':
           $ref: '#/components/responses/ServerError'
+
+  /tipper/v1/applications/latest:
+    get:
+      summary: Get Latest Application Status
+      tags:
+        - tipper
+      description: Retrieves the most recent application associated with the authenticated tipper staff, including its current workflow status.
+      responses:
+        '200':
+          description: Successfully retrieved the latest application.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralSuccessEnvelope'
+                example:
+                  success: true
+                  data:
+                    id: "962a29b9-80aa-4365-aa23-6cfa4acbe227"
+                    status: "PENDING_REVIEW_BUSINESS_OPS"
+                    createdAt: "2023-10-27T10:00:00Z"
+                    updatedAt: "2023-10-27T14:30:00Z"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No application found for this user.
+          $ref: '#/components/responses/NotFound'
 
   /tipper/v1/applications/{id}/documents/{type}:
     post:
