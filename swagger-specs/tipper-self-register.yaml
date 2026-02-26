@@ -155,10 +155,54 @@ paths:
                     status: "PENDING_REVIEW_BUSINESS_OPS"
                     documents: {
                       KTP: {
-                        url: "image-url.com"
+                        url: "image-url.com",
+                        ocrResult: {
+                          address: string,
+                          birthPlace: string,
+                          bloodType: string,
+                          city: string,
+                          dateOfBirth: string,
+                          expiryDate: string,
+                          gender: string,
+                          isSuspicious: true,
+                          maritalStatus: string,
+                          name: string,
+                          nationality: string,
+                          nik: string,
+                          occupation: string,
+                          province: string,
+                          region: string,
+                          religion: string,
+                          rt: string,
+                          rw: string,
+                          suspiciousReasons: [
+                            string
+                          ],
+                          village: string,
+                          message: [
+                            string
+                          ],
+                          runtime_log: string,
+                          success: string
+                        }
                       },
-                      PROFILE: {
-                        url: "image-url.com"
+                      NPWP: {
+                        url: "image-url.com",
+                        ocrResult: {
+                          address: string,
+                          name: string,
+                          nik: string,
+                          npwp: string,
+                          npwpValid: true,
+                          taxBranch: string,
+                          taxType: string,
+                          taxPayerStatus: string,
+                          message: [
+                            string
+                          ],
+                          runtime_log: string,
+                          success: string
+                        }
                       },
                       COMPANY_CARD: {
                         url: "image-url.com"
