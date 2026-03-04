@@ -38,7 +38,9 @@ paths:
                 example:
                   success: true
                   data: {
-                    message: "Success"
+                    prefix: "ABCD",
+                    attemptExpiredIn: "2026-03-04T14:50:59.123456789+07:00",
+                    token: "<jwt token for validate-otp api>"
                   }
         '400':
           $ref: '#/components/responses/BadRequest'
@@ -48,6 +50,13 @@ paths:
       summary: Validate Registration OTP
       tags:
         - public
+      parameters:
+        - name: x-authentication-session-token
+          in: header
+          description: Access token from /send-otp API
+          required: true
+          schema:
+            type: string
       description: Verifies the OTP sent to the user's email before allowing full registration.
       requestBody:
         required: true
@@ -88,7 +97,7 @@ paths:
       tags:
         - public
       parameters:
-        - name: X-REGISTER-ACCESS-TOKEN
+        - name: x-authentication-session-token
           in: header
           description: Access token from /validate-otp API
           required: true
