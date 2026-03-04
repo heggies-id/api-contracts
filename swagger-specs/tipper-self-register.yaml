@@ -88,7 +88,6 @@ paths:
                   data:
                     token: "eyJ0eXA..."
         '400':
-          description: Invalid or expired OTP.
           $ref: '#/components/responses/BadRequest'
 
   /public/v1/tipper/register:
@@ -220,7 +219,6 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
-          description: No application found for this user.
           $ref: '#/components/responses/NotFound'
 
   /tipper/v1/applications/{id}/documents/{type}:
@@ -356,15 +354,6 @@ paths:
                     delta: "<delta in json>"
                     createdAt: ""
                     updatedAt: ""
-                  - id: "id"
-                    tipperStaffApplicationId: "tipperStaffApplicationId"
-                    updaterId: "updaterId"
-                    updaterRole: "[USER|ADMIN]"
-                    action: "[CREATE_APPLICATION|SUBMIT_APPLICATION|UPDATE]"
-                    reason: "remarks"
-                    delta: "<delta in json>"
-                    createdAt: ""
-                    updatedAt: ""
 
 components:
   responses:
@@ -381,13 +370,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/MerchantEnvelope'
-
-    Created:
-      description: The resource was created successfully.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/CreatedEnvelope'
 
     BadRequest:
       description: The request was invalid.
@@ -418,14 +400,12 @@ components:
             $ref: '#/components/schemas/ErrorEnvelope'
 
   schemas:
-    # --- BUSINESS ENTITIES ---
     Merchant:
       type: object
       properties:
         id: { type: string, example: "ece3a9b7-8fab-43c8-9567-253687054462" }
         name: { type: string, example: "Jaya Elektronik" }
 
-    # --- SUCCESS ENVELOPES ---
     GeneralSuccessEnvelope:
       type: object
       properties:
@@ -444,17 +424,6 @@ components:
           items:
             $ref: '#/components/schemas/Merchant'
 
-    CreatedEnvelope:
-      type: object
-      properties:
-        success: { type: boolean, example: true }
-        data:
-          type: object
-          properties:
-            id: { type: string, example: "12345" }
-            message: { type: string, example: "Resource created successfully" }
-
-    # --- ERROR ENVELOPES ---
     ErrorEnvelope:
       type: object
       properties:
@@ -462,42 +431,11 @@ components:
         error:
           $ref: '#/components/schemas/ErrorModel'
 
-    # --- DATA MODELS ---
     ErrorModel:
       type: object
       properties:
         type: { type: string, example: "BadRequest|<error messaging>" }
         message: { type: string, example: "<error message in bahasa indonesia>" }
-
-    LoginRequest:
-      type: object
-      properties:
-        email: { type: string, example: "johndoe@example.com" }
-        password: { type: string, format: password, example: "P@ssword123" }
-
-    LoginResponse:
-      type: object
-      properties:
-        success: { type: boolean, example: true }
-        data:
-          type: object
-          properties:
-            token: { type: string, example: "eyJ0eXA..." }
-            showTncAgreement: { type: boolean, example: false }
-            application:
-              type: object
-              properties:
-                status:
-                  type: string
-                  description: "Application status"
-                  enum:
-                    - INCOMPLETE
-                    - PENDING_REVIEW_ANTI_FRAUD
-                    - PENDING_REVIEW_BUSINESS_OPS
-                    - APPROVED
-                    - REJECTED
-                    - BLOCKED
-                  example: "INCOMPLETE"
 
     RegistrationRequest:
       type: object
