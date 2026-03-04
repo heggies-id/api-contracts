@@ -434,8 +434,21 @@ components:
     ErrorModel:
       type: object
       properties:
-        type: { type: string, example: "BadRequest|<error messaging>" }
-        message: { type: string, example: "<error message in bahasa indonesia>" }
+        type: 
+          type: string
+          description: "Specific error code for business logic failures."
+          enum:
+            - BadRequest
+            - KTPAlreadyRegisteredException
+            - NIKBlacklistedException
+            - Unauthorized
+            - NotFound
+            - InternalServerError
+          example: "KTPAlreadyRegisteredException"
+        message: 
+          type: string
+          description: "Human-readable error message, typically in Bahasa Indonesia."
+          example: "Nomor KTP sudah terdaftar dalam sistem."
 
     RegistrationRequest:
       type: object
