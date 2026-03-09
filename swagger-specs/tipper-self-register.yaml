@@ -454,5 +454,4 @@ components:
     RegistrationRequest:
       type: object
       properties:
-        email: { type: string, example: "johndoe@example.com" }
         password: { type: string, format: password, example: "P@ssword123" }
